@@ -1,96 +1,88 @@
 'use strict';
 
-{
-  let todos;
-
-  if (localStorage.getItem('todos') === null) {
-    todos = [];
-  } else {
-    todos = JSON.parse(localStorage.getItem('todos'));
-  }
+(() => {
+  let todos = JSON.parse(localStorage.getItem('todos')) || [];
 
   const saveTodos = () => {
     localStorage.setItem('todos', JSON.stringify(todos));
   };
 
-  const renderTodo = (todo) => {
-    /*
-    - li
-      - label
-        - input
-        - span
-      - button
-    */
-    const input = document.createElement('input');
-    input.type = 'checkbox';
-    input.checked = todo.isCompleted;
-    input.addEventListener('change', () => {
-      todos.forEach((item) => {
-        if (item.id === todo.id) {
-          item.isCompleted = !item.isCompleted;
-        }
-      });
-      saveTodos();
+  const createElementWithAttributes = (tag, attributes = {}, ...children) => {
+    const element = document.createElement(tag);
+    Object.entries(attributes).forEach(([key, value]) => {
+      element[key] = value;
     });
-    const span = document.createElement('span');
-    span.textContent = todo.title;
-    const label = document.createElement('label');
-    label.appendChild(input);
-    label.appendChild(span);
-    const button = document.createElement('button');
-    button.textContent = 'x';
-    button.addEventListener('click', () => {
-      // if (confirm('Sure?') === false) {
-      if (!confirm('Delete?')) {
-        return;
+    children.forEach((child) => {
+      if (typeof child === 'string') {
+        element.appendChild(document.createTextNode(child));
+      } else {
+        element.appendChild(child);
       }
-      li.remove();
-      todos = todos.filter((item) => {
-        return item.id !== todo.id;
-      });
-      saveTodos();
     });
-    const li = document.createElement('li');
-    li.appendChild(label);
-    li.appendChild(button);
+    return element;
+  };
+
+  const updateTodos = (updatedTodos) => {
+    todos = updatedTodos;
+    saveTodos();
+    renderTodos();
+  };
+
+  const renderTodo = (todo) => {
+    const input = createElementWithAttributes('input', {
+      type: 'checkbox',
+      checked: todo.isCompleted,
+    });
+    input.addEventListener('change', () => {
+      updateTodos(
+        todos.map((item) =>
+          item.id === todo.id
+            ? { ...item, isCompleted: !item.isCompleted }
+            : item
+        )
+      );
+    });
+
+    const span = createElementWithAttributes('span', {}, todo.title);
+
+    const label = createElementWithAttributes('label', {}, input, span);
+
+    const button = createElementWithAttributes('button', {}, 'x');
+    button.addEventListener('click', () => {
+      if (!confirm('Delete?')) return;
+      updateTodos(todos.filter((item) => item.id !== todo.id));
+    });
+
+    const li = createElementWithAttributes('li', {}, label, button);
     document.querySelector('#todos').appendChild(li);
   };
 
   const renderTodos = () => {
-    todos.forEach((todo) => {
-      renderTodo(todo);
-    });
+    const todosList = document.querySelector('#todos');
+    todosList.innerHTML = '';
+    todos.forEach(renderTodo);
   };
 
   document.querySelector('#add-form').addEventListener('submit', (e) => {
     e.preventDefault();
     const input = document.querySelector('#add-form input');
-    const todo = {
+    const newTodo = {
       id: Date.now(),
-      title: input.value,
+      title: input.value.trim(),
       isCompleted: false,
     };
-    renderTodo(todo);
-    todos.push(todo);
-    console.table(todos);
+    if (!newTodo.title) return;
+    todos.push(newTodo);
     saveTodos();
+    renderTodo(newTodo);
     input.value = '';
     input.focus();
   });
 
   document.querySelector('#purge').addEventListener('click', () => {
-    if (!confirm('Sure?')) {
-      return;
-    }
-    todos = todos.filter((todo) => {
-      return todo.isCompleted === false;
-    });
-    saveTodos();
-    document.querySelectorAll('#todos li').forEach((li) => {
-      li.remove();
-    });
-    renderTodos();
+    if (!confirm('Sure?')) return;
+    updateTodos(todos.filter((todo) => !todo.isCompleted));
   });
 
   renderTodos();
-}
+})();

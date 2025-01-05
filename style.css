@@ -2,21 +2,26 @@
 
 body {
   margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
 }
 
 .container {
   width: 400px;
-  margin: 16px auto;
+  margin: 20px auto;
+  padding: 20px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
 }
 
 h1 {
-  margin: 0;
-  font-size: 20px;
-  border-bottom: 1px solid #ccc;
+  margin: 0 0 16px;
+  font-size: 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 8px;
 }
 
 ul {
@@ -28,8 +33,14 @@ ul {
 li {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-top: 16px;
+  align-items: center;
+  margin-top: 12px;
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+li:last-child {
+  border-bottom: none;
 }
 
 li input:checked + span {
@@ -41,8 +52,18 @@ li input {
   margin-right: 8px;
 }
 
-li label {
-  margin-right: 8px;
+li button {
+  background: #f44336;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: background 0.2s ease;
+}
+
+li button:hover {
+  background: #d32f2f;
 }
 
 form {
@@ -53,5 +74,36 @@ form {
 
 form input {
   flex: 1;
-  padding: 4px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+form button {
+  background: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+form button:hover {
+  background: #388e3c;
+}
+
+#purge {
+  background: #2196f3;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+#purge:hover {
+  background: #1976d2;
 }
